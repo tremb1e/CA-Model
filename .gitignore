@@ -205,3 +205,8 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# HMOG generated data and user artifacts
+cached_windows/
+results/
+experiment_results/

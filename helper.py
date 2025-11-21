@@ -52,13 +52,14 @@ class UpSampleBlock(nn.Module):
 
 
 class DownSampleBlock(nn.Module):
-    def __init__(self, channels):
+    def __init__(self, channels, stride=(2, 2), pad=(0, 1, 0, 1)):
         super(DownSampleBlock, self).__init__()
-        self.conv = nn.Conv2d(channels, channels, 3, 2, 0)
+        self.stride = stride
+        self.pad = pad
+        self.conv = nn.Conv2d(channels, channels, 3, stride=stride, padding=0)
 
     def forward(self, x):
-        pad = (0, 1, 0, 1)
-        x = F.pad(x, pad, mode="constant", value=0)
+        x = F.pad(x, self.pad, mode="constant", value=0)
         return self.conv(x)
 
 

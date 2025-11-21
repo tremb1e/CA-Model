@@ -5,7 +5,6 @@ from encoder import Encoder
 from decoder import Decoder
 from codebook import Codebook
 from torchsummary import summary
-os.environ['CUDA_VISIBLE_DEVICES'] = '0, 1'
 class VQGAN(nn.Module):
     def __init__(self, args):
         super(VQGAN, self).__init__()

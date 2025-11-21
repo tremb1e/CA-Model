@@ -10,6 +10,7 @@ class VQGANTransformer(nn.Module):
         super(VQGANTransformer, self).__init__()
 
         self.sos_token = args.sos_token
+        self.codebook_hw = getattr(args, "codebook_shape", (3, 6))
 
         self.vqgan = self.load_vqgan(args)
 
@@ -34,15 +35,15 @@ class VQGANTransformer(nn.Module):
     @torch.no_grad()
     def encode_to_z(self, x):
         quant_z, indices, _ = self.vqgan.encode(x)
-        #print("###########################", quant_z.size())
+        self.codebook_hw = quant_z.shape[2:]
         indices = indices.view(quant_z.shape[0], -1)
         return quant_z, indices
 
     @torch.no_grad()
-    def z_to_image(self, indices, p1=1, p2=6):
-        ix_to_vectors = self.vqgan.codebook.embedding(indices).reshape(indices.shape[0], p1, p2, 256)
+    def z_to_image(self, indices, p1=None, p2=None):
+        h, w = self.codebook_hw if p1 is None or p2 is None else (p1, p2)
+        ix_to_vectors = self.vqgan.codebook.embedding(indices).reshape(indices.shape[0], h, w, self.vqgan.codebook.latent_dim)
         ix_to_vectors = ix_to_vectors.permute(0, 3, 1, 2)
-        #print("###########################", ix_to_vectors.size())
         image = self.vqgan.decode(ix_to_vectors)
         return image
 
